@@ -32,7 +32,7 @@ public class SystemMetricsService {
 
         // calculates cpu load and ram used as percentages
         double cpuLoad = processor.getSystemCpuLoad(1000) * 100;
-        double ramUsed = ((memory.getTotal() - memory.getAvailable()) / memory.getTotal()) * 100;
+        double ramUsed = (((double) memory.getTotal() - memory.getAvailable()) / memory.getTotal()) * 100;
         
         metrics.add(cpuLoad);
         metrics.add(ramUsed);
