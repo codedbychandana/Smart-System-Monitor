@@ -32,4 +32,18 @@ public class OverloadReductionService {
         }
         cpuLoadHistory.offer(cpuLoad);
     }
+
+    /** returns true if cpu is overloaded 
+    */
+    private boolean isOverloaded(){
+        return cpuLoadHistory.stream()
+        .allMatch(load -> load > 80);
+    }
+
+    /** uses isolation forest to predict overloading possibility 
+    */
+    private boolean predictOverloading(){
+        /* stub */
+        return false;
+    }
 }
