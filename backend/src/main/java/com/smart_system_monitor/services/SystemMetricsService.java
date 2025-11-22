@@ -30,12 +30,12 @@ public class SystemMetricsService {
         CentralProcessor processor = HAL.getProcessor();
         GlobalMemory memory = HAL.getMemory();
 
-        // calculates cpu load and ram used as a percentage
+        // calculates cpu load and ram used as percentages
         double cpuLoad = processor.getSystemCpuLoad(1000) * 100;
-        double ramUsedPercentage = ((memory.getTotal() - memory.getAvailable()) / memory.getTotal()) * 100;
+        double ramUsed = ((memory.getTotal() - memory.getAvailable()) / memory.getTotal()) * 100;
         
         metrics.add(cpuLoad);
-        metrics.add(ramUsedPercentage);
+        metrics.add(ramUsed);
         return metrics;
     }
 }
