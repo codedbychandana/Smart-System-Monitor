@@ -6,9 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import com.smart_system_monitor.helpers.IsolationForestManager;
 import com.smart_system_monitor.models.ProcessLogItem;
 
 import oshi.SystemInfo;
@@ -18,15 +20,19 @@ import oshi.software.os.OSProcess;
 
 @Service
 public class OverloadReductionService {
+    @Autowired
     private SystemMetricsService sysMetricsService;
+
+    @Autowired
+    private IsolationForestManager isolationForestManager;
 
     private final OperatingSystem OS;
 
     // keeps track of cpu load readings
     private final Queue<Double> cpuLoadHistory;
 
-    public OverloadReductionService(SystemMetricsService sysMetricsService){
-        this.sysMetricsService = sysMetricsService;
+    @Autowired
+    public OverloadReductionService(){
         OS = new SystemInfo().getOperatingSystem();
         cpuLoadHistory = new LinkedList<>();
     }
@@ -68,9 +74,12 @@ public class OverloadReductionService {
 
     /** uses isolation forest to predict overloading possibility 
     */
-    private boolean predictOverloading(double cpuLoad){
-        /* stub */
-        return false;
+    private boolean predictOverloading(){
+        double[] cpuLoads = cpuLoadHistory.stream()
+        .mapToDouble(Double::valueOf)
+        .toArray();
+
+        return isolationForestManager.isAnomaly(cpuLoads);
     }
 
     /** kills process consuming the most cpu load

@@ -1,12 +1,22 @@
 package com.smart_system_monitor.helpers;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.smart_system_monitor.config.IsolationForestConfig;
 
 import smile.anomaly.IsolationForest;
 
+@Component
 public class IsolationForestManager{
     @Autowired
     private IsolationForest model;
+
+    @Autowired
+    private IsolationForestConfig modelConfig;
 
     /**
      * get threshold based on cpu readings
@@ -20,8 +30,16 @@ public class IsolationForestManager{
     /** 
      * return true if anomaly detected 
     */
-    public boolean isAnomaly(double[] samples){
+    public boolean isAnomaly(double[] sample){
         double percentile = 95;
-        return model.score(samples) > getThreshold(samples, percentile);
+        return model.score(sample) * 100 > getThreshold(sample, percentile);
+    }
+
+    /**
+     * train the model
+    */
+    public void train(double[][] data) throws IOException, FileNotFoundException{
+        model = IsolationForest.fit(data);
+        modelConfig.save(model);
     }
 }

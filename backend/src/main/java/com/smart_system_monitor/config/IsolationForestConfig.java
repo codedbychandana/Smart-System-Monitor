@@ -10,32 +10,52 @@ import java.io.ObjectOutputStream;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 import smile.anomaly.IsolationForest;
 
 @Configuration
 public class IsolationForestConfig {
+    // saved model path
+    private final String path = "src/main/resources/model/IsolationForest.bin";
+
     /**
      * loads existing model or creates new isolation forest model saving it
     */
     @Bean
     public IsolationForest isolationForestModel() throws ClassNotFoundException, IOException {
-        String path = "src/main/resources/model/IsolationForest.bin";
         IsolationForest model = null;
 
         try{
-            // load model if existing
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
-            model = (IsolationForest) ois.readObject();
-            ois.close();
+            model = load();
         } catch (FileNotFoundException e){
             // create model and serialize
             model = IsolationForest.fit(null);
-            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
-            oos.writeObject(model);
-            oos.close();
+            save(model);
         }
 
         return model;
+    }
+
+    /**
+     * deserializer for trained model
+    */
+    private IsolationForest load() throws ClassNotFoundException, FileNotFoundException, IOException{
+        IsolationForest model = null;
+
+        // load model if exists
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+        model = (IsolationForest) ois.readObject();
+
+        ois.close();
+
+        return model;
+    }
+
+    /** 
+     * serializer for model
+    */
+    public void save(IsolationForest model) throws FileNotFoundException, IOException{
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
+        oos.writeObject(model);
+        oos.close();
     }
 }
