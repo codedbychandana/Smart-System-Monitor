@@ -68,7 +68,7 @@ public class OverloadReductionService {
 
     /** uses isolation forest to predict overloading possibility 
     */
-    private boolean predictOverloading(){
+    private boolean predictOverloading(double cpuLoad){
         /* stub */
         return false;
     }

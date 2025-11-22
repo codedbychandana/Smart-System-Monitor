@@ -24,10 +24,12 @@ public class IsolationForestConfig {
         IsolationForest model = null;
 
         try{
+            // load model if existing
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
             model = (IsolationForest) ois.readObject();
             ois.close();
         } catch (FileNotFoundException e){
+            // create model and serialize
             model = IsolationForest.fit(null);
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(path));
             oos.writeObject(model);

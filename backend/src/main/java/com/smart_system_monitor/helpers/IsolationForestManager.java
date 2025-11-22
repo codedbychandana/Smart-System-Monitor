@@ -1,8 +1,11 @@
 package com.smart_system_monitor.helpers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import smile.anomaly.IsolationForest;
 
 public class IsolationForestManager{
+    @Autowired
     private IsolationForest model;
 
     /**
@@ -14,7 +17,11 @@ public class IsolationForestManager{
         return data[index];
     }
 
-    private void train(double[][] data){
-        ModelSerializer.
+    /** 
+     * return true if anomaly detected 
+    */
+    public boolean isAnomaly(double[] samples){
+        double percentile = 95;
+        return model.score(samples) > getThreshold(samples, percentile);
     }
 }
