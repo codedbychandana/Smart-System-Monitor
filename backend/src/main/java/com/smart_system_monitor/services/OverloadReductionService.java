@@ -1,12 +1,16 @@
 package com.smart_system_monitor.services;
 
+import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 import org.springframework.stereotype.Service;
 
 import oshi.SystemInfo;
 import oshi.software.os.OperatingSystem;
+import oshi.software.os.OperatingSystem.ProcessSorting;
+import oshi.software.os.OSProcess;
 
 @Service
 public class OverloadReductionService {
@@ -45,5 +49,20 @@ public class OverloadReductionService {
     private boolean predictOverloading(){
         /* stub */
         return false;
+    }
+
+    /** kills process consuming the most cpu load
+    */
+    private void killTopProcess() throws IOException{
+        // get top 5 running processes in order of cpu usage
+        List<OSProcess> processes = OS.getProcesses(null, (p1, p2) -> Double.compare(p2.getProcessCpuLoadCumulative(), p1.getProcessCpuLoadCumulative()), 5);
+        if (processes.isEmpty()){
+            return;
+        }
+        int pid = processes.get(0).getProcessID();
+        
+        // kill top process
+        Runtime.getRuntime().exec("taskkill /PID " + pid + "/F");
+        System.out.println("Process " + pid + " has been terminated.");
     }
 }
