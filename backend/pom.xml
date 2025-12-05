@@ -31,12 +31,14 @@
 	</properties>
 	<dependencies>
 
+		<!-- system metrics -->
 		<dependency>
 			<groupId>com.github.oshi</groupId>
 			<artifactId>oshi-core</artifactId>
 			<version>6.4.2</version>
     	</dependency>
 
+		<!-- isolation forest -->
 		<dependency>
 			<groupId>com.github.haifengl</groupId>
 			<artifactId>smile-core</artifactId>
@@ -50,12 +52,19 @@
 			<version>1.4.21</version>
 		</dependency>
 
+		<!-- jedis -->
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>7.0.0</version>
 		</dependency>
 
+		<!-- aop -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+			<version>6.2.11</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
