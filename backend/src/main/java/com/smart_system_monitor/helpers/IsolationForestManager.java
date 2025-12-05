@@ -32,6 +32,7 @@ public class IsolationForestManager{
     */
     public boolean isAnomaly(double[] sample, double[] data){
         double percentile = 95;
+        System.out.println(model.score(sample));
         return model.score(sample) * 100 > getThreshold(data, percentile);
     }
 

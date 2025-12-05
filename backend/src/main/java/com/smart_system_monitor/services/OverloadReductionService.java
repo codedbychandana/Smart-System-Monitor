@@ -40,8 +40,7 @@ public class OverloadReductionService {
     /**
      * reduce overload and monitor every 2 seconds
     */
-    @Scheduled(fixedRate= 2000)
-    public void monitorCpuLoad() throws IOException{
+    public ProcessLogItem monitorCpuLoad() throws IOException{
         double curCpuLoad = sysMetricsService.getMetrics().get(0);
         // add to cpu history
         addCpuLoad(curCpuLoad);
@@ -49,8 +48,9 @@ public class OverloadReductionService {
         // reduce overload
         if (isOverloaded() || predictOverloading()){
             int pid = killTopProcess();
-            ProcessLogItem process = new ProcessLogItem(new Date(), pid, "Process terminated");
+            return new ProcessLogItem(new Date(), pid, "Process terminated");
         }
+        return null;
     }
 
     /**
@@ -78,7 +78,7 @@ public class OverloadReductionService {
         if (cpuLoadHistory.isEmpty()){
             return false;
         }
-        double[] cpuLoad = new double[]{cpuLoadHistory.peek(), 0};
+        double[] cpuLoad = new double[]{cpuLoadHistory.peek()};
 
         return isolationForestManager.isAnomaly(cpuLoad, cpuLoadHistory.stream()
             .mapToDouble(Double::valueOf)
@@ -90,7 +90,8 @@ public class OverloadReductionService {
     */
     private int killTopProcess() throws IOException{
         // get top 5 running processes in order of cpu usage
-        List<OSProcess> processes = OS.getProcesses(null, (p1, p2) -> Double.compare(p2.getProcessCpuLoadCumulative(), p1.getProcessCpuLoadCumulative()), 5);
+        List<OSProcess> processes = OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, 5);
+        
         if (processes.isEmpty()){
             return -1;
         }

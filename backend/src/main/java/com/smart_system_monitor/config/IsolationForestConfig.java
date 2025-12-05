@@ -9,6 +9,9 @@ import java.io.ObjectOutputStream;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import com.smart_system_monitor.services.SystemMetricsService;
 
 import smile.anomaly.IsolationForest;
 
@@ -21,18 +24,23 @@ public class IsolationForestConfig {
      * loads existing model or creates new isolation forest model saving it
     */
     @Bean
-    public IsolationForest isolationForestModel() throws ClassNotFoundException, IOException {
+    public IsolationForest isolationForestModel(SystemMetricsService sysMetricsService) throws ClassNotFoundException, IOException {
         IsolationForest model = null;
 
         try{
             model = load();
         } catch (FileNotFoundException e){
             // create model and serialize
-            model = IsolationForest.fit(null);
+            model = IsolationForest.fit(new double[][]{{0, 0}});
             save(model);
         }
 
         return model;
+    }
+
+    @Scheduled(fixedRate= 500)
+    private void initModel(){
+        System.out.println("e");
     }
 
     /**
