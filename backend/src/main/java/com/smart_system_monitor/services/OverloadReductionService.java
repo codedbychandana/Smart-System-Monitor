@@ -13,27 +13,19 @@ import org.springframework.stereotype.Service;
 import com.smart_system_monitor.helpers.IsolationForestManager;
 import com.smart_system_monitor.models.ProcessLogItem;
 
-import oshi.SystemInfo;
-import oshi.software.os.OperatingSystem;
-import oshi.software.os.OperatingSystem.ProcessSorting;
-import oshi.software.os.OSProcess;
-
 @Service
 public class OverloadReductionService {
-    @Autowired
-    private SystemMetricsService sysMetricsService;
+    private final SystemMetricsService sysMetrics;
 
-    @Autowired
-    private IsolationForestManager isolationForestManager;
-
-    private final OperatingSystem OS;
+    private final IsolationForestManager isolationForestManager;
 
     // keeps track of cpu load readings
     private final Queue<Double> cpuLoadHistory;
 
     @Autowired
-    public OverloadReductionService(){
-        OS = new SystemInfo().getOperatingSystem();
+    public OverloadReductionService(SystemMetricsService sysMetrics, IsolationForestManager isolationForestManager){
+        this.sysMetrics = sysMetrics;
+        this.isolationForestManager = isolationForestManager;
         cpuLoadHistory = new LinkedList<>();
     }
 
@@ -41,7 +33,7 @@ public class OverloadReductionService {
      * reduce overload and monitor every 2 seconds
     */
     public ProcessLogItem monitorCpuLoad() throws IOException{
-        double curCpuLoad = sysMetricsService.getMetrics().get(0);
+        double curCpuLoad = sysMetrics.getMetrics().get(0);
         // add to cpu history
         addCpuLoad(curCpuLoad);
 
@@ -90,7 +82,7 @@ public class OverloadReductionService {
     */
     private int killTopProcess() throws IOException{
         // get top 5 running processes in order of cpu usage
-        List<OSProcess> processes = OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, 5);
+        List<OSProcess> processes = sysMetrics.getProcesses(5);
         
         if (processes.isEmpty()){
             return -1;

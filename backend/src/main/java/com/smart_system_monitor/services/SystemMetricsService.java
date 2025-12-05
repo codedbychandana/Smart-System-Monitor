@@ -9,6 +9,9 @@ import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
+import oshi.software.os.OperatingSystem;
+import oshi.software.os.OperatingSystem.ProcessSorting;
+import oshi.software.os.OSProcess;
 
 @Service
 public class SystemMetricsService {
@@ -37,5 +40,13 @@ public class SystemMetricsService {
         metrics.add(cpuLoad);
         metrics.add(ramUsed);
         return metrics;
+    }
+
+    /**
+     * returns list of top n processes (descending order of cpu load consumption)
+    */
+    public List<OSProcess> getProcesses(int n){
+        OperatingSystem OS = sysInfo.getOperatingSystem();
+        return OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, n);
     }
 }
