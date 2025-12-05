@@ -8,10 +8,12 @@ import java.util.Date;
 public class ProcessLogItem {
     private Date date;
     private int pid;
+    private String actionTaken;
 
-    public ProcessLogItem(Date date, int pid){
+    public ProcessLogItem(Date date, int pid, String actionTaken){
         this.date = date;
         this.pid = pid;
+        this.actionTaken = actionTaken;
     }
 
     public int getPid(){
@@ -20,5 +22,9 @@ public class ProcessLogItem {
 
     public Date getDate(){
         return date;
+    }
+
+    public String getActionTaken(){
+        return actionTaken;
     }
 }

@@ -30,9 +30,9 @@ public class IsolationForestManager{
     /** 
      * return true if anomaly detected 
     */
-    public boolean isAnomaly(double[] sample){
+    public boolean isAnomaly(double[] sample, double[] data){
         double percentile = 95;
-        return model.score(sample) * 100 > getThreshold(sample, percentile);
+        return model.score(sample) * 100 > getThreshold(data, percentile);
     }
 
     /**

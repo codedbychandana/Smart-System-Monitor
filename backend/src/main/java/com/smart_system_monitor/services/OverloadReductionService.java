@@ -49,7 +49,7 @@ public class OverloadReductionService {
         // reduce overload
         if (isOverloaded() || predictOverloading()){
             int pid = killTopProcess();
-            ProcessLogItem process = new ProcessLogItem(new Date(), pid);
+            ProcessLogItem process = new ProcessLogItem(new Date(), pid, "Process terminated");
         }
     }
 
@@ -75,11 +75,15 @@ public class OverloadReductionService {
     /** uses isolation forest to predict overloading possibility 
     */
     private boolean predictOverloading(){
-        double[] cpuLoads = cpuLoadHistory.stream()
-        .mapToDouble(Double::valueOf)
-        .toArray();
+        if (cpuLoadHistory.isEmpty()){
+            return false;
+        }
+        double[] cpuLoad = new double[]{cpuLoadHistory.peek(), 0};
 
-        return isolationForestManager.isAnomaly(cpuLoads);
+        return isolationForestManager.isAnomaly(cpuLoad, cpuLoadHistory.stream()
+            .mapToDouble(Double::valueOf)
+            .toArray()
+        );
     }
 
     /** kills process consuming the most cpu load
