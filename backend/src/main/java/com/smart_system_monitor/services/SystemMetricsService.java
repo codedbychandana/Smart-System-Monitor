@@ -47,6 +47,11 @@ public class SystemMetricsService {
     */
     public List<OSProcess> getProcesses(int n){
         OperatingSystem OS = sysInfo.getOperatingSystem();
-        return OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, n);
+        List<OSProcess> res = OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, n);
+        for (OSProcess p : res){
+            System.out.println(p.getProcessCpuLoadCumulative());
+        }
+            
+        return res;
     }
 }

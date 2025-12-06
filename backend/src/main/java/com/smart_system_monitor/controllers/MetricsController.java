@@ -30,7 +30,7 @@ public class MetricsController {
     /** 
      * returns system metrics as JSON response
     */
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<Double>> getMetrics(){
         List<Double> metrics = sysMetricsService.getMetrics();
         return new ResponseEntity<>(metrics, HttpStatus.OK);

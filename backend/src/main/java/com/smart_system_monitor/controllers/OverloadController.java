@@ -1,34 +1,44 @@
 package com.smart_system_monitor.controllers;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
 import com.smart_system_monitor.models.ProcessLogItem;
 import com.smart_system_monitor.services.OverloadReductionService;
 
-@RestController("/overload")
+@RestController
+@RequestMapping("/overload")
 public class OverloadController {
     private final OverloadReductionService overloadReduction;
-    private final Gson gson;
 
-    public OverloadController(OverloadReductionService overloadReduction, Gson gson){
+    public OverloadController(OverloadReductionService overloadReduction){
         this.overloadReduction = overloadReduction;
-        this.gson = gson;
     }
 
-    @GetMapping
-    public ResponseEntity<String> monitorCpuOverload(){
+    /**
+     * api endpoint to monitor cpu load using isolation forest
+    */
+    @GetMapping("/monitor")
+    public ResponseEntity<Map<String, ProcessLogItem>> monitorCpuOverload(){
         try{
             ProcessLogItem logItem = overloadReduction.monitorCpuLoad();
-            return new ResponseEntity<>(gson.toJson(logItem), HttpStatus.OK);
+            // response
+            Map<String, ProcessLogItem> payload = new HashMap<>();
+            payload.put("processRemoved", logItem);
+
+            return new ResponseEntity<>(payload, HttpStatus.OK);
         } catch (IOException e){
             System.out.println(e);
         }
-        return new ResponseEntity<>("Error", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

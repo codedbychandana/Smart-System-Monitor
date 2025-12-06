@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.smart_system_monitor.helpers.IsolationForestManager;
 import com.smart_system_monitor.models.ProcessLogItem;
 
+import oshi.software.os.OSProcess;
+
 @Service
 public class OverloadReductionService {
     private final SystemMetricsService sysMetrics;
@@ -39,6 +41,7 @@ public class OverloadReductionService {
 
         // reduce overload
         if (isOverloaded() || predictOverloading()){
+            
             int pid = killTopProcess();
             return new ProcessLogItem(new Date(), pid, "Process terminated");
         }

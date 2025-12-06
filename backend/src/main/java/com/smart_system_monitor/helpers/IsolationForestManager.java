@@ -2,6 +2,7 @@ package com.smart_system_monitor.helpers;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,9 +32,9 @@ public class IsolationForestManager{
      * return true if anomaly detected 
     */
     public boolean isAnomaly(double[] sample, double[] data){
-        double percentile = 95;
-        System.out.println(model.score(sample));
-        return model.score(sample) * 100 > getThreshold(data, percentile);
+        double percentile = 20;
+        
+        return model.score(sample) * 100 > percentile;
     }
 
     /**

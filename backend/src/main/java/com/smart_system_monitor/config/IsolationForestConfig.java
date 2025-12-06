@@ -2,10 +2,12 @@ package com.smart_system_monitor.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,17 +32,23 @@ public class IsolationForestConfig {
         try{
             model = load();
         } catch (FileNotFoundException e){
+            final int SAMPLE_COUNT = 5;
+
+            // fetch initial sample loads
+            double[][] data = new double[SAMPLE_COUNT][];
+            
+            // convert to 2d double array
+            data = sysMetricsService.getProcesses(SAMPLE_COUNT)
+            .stream()
+            .map(p -> new double[]{p.getProcessCpuLoadCumulative() * 100})
+            .toArray(double[][]::new);
+
             // create model and serialize
-            model = IsolationForest.fit(new double[][]{{0, 0}});
+            model = IsolationForest.fit(data);
             save(model);
         }
 
         return model;
-    }
-
-    @Scheduled(fixedRate= 500)
-    private void initModel(){
-        System.out.println("e");
     }
 
     /**
@@ -48,6 +56,10 @@ public class IsolationForestConfig {
     */
     private IsolationForest load() throws ClassNotFoundException, FileNotFoundException, IOException{
         IsolationForest model = null;
+        // for test
+        File file = new File(path);
+        file.delete();
+
 
         // load model if exists
         ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
