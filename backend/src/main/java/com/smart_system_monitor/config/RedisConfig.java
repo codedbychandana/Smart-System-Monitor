@@ -9,13 +9,13 @@ import redis.clients.jedis.JedisPoolConfig;
 
 @Configuration
 public class RedisConfig {
-    @Value("{$redis.url}")
+    @Value("${redis.url}")
     private String HOST;
     
     private final int PORT = 14176;
     private final String USER = "default";
 
-    @Value("{$redis.password}")
+    @Value("${redis.password}")
     private String PASSWORD;
 
     @Bean

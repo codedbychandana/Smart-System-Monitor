@@ -28,7 +28,7 @@ public class LoggingAspect {
         this.gson = gson;
     }
     
-    @Pointcut("execution(public ProcessLogItem com.smart_system_monitor..*(..))")
+    @Pointcut("execution(* com.smart_system_monitor.services..*(..))")
     private void loggingPointcutSignature(){}
 
     /**

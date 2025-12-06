@@ -28,7 +28,7 @@ public class OverloadController {
      * api endpoint to monitor cpu load using isolation forest
     */
     @GetMapping("/monitor")
-    public ResponseEntity<Map<String, ProcessLogItem>> monitorCpuOverload(){
+    public ResponseEntity<Map<String, ProcessLogItem>> monitor(){
         try{
             ProcessLogItem logItem = overloadReduction.monitorCpuLoad();
             // response
