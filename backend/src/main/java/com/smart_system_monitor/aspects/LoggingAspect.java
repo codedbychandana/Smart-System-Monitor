@@ -36,7 +36,9 @@ public class LoggingAspect {
     */
     @AfterReturning(value= "loggingPointcutSignature()", returning= "logItem")
     public void logToRedis(ProcessLogItem logItem){
-        System.out.println("log");
+        if (logItem == null){
+            return;
+        }
         try(Jedis jedis = jedisPool.getResource()){
             String logItemJSON = gson.toJson(logItem);
 
