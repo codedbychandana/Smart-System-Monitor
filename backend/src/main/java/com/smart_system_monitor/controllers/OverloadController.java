@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,12 +27,25 @@ public class OverloadController {
     }
 
     /**
-     * api endpoint to monitor cpu load using isolation forest
+     * api endpoint to check if cpu is overloaded
     */
     @GetMapping("/monitor")
-    public ResponseEntity<Map<String, ProcessLogItem>> monitor(){
+    public ResponseEntity<Map<String, Boolean>> monitor(@RequestBody Map<String, Double> body){
+        boolean isOverloaded = overloadReduction.monitorCpuLoad(body.get("threshold"));
+        
+        // response
+        Map<String, Boolean> res = new HashMap<>();
+        res.put("overloaded", isOverloaded);
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }  
+
+    /**
+     * terminates anomalous cpu process when overload detected
+    */
+    @PostMapping("/reduceLoad")
+    public ResponseEntity<Map<String, ProcessLogItem>> reduceLoad(@RequestBody Map<String, Double> body){
         try{
-            ProcessLogItem logItem = overloadReduction.monitorCpuLoad();
+            ProcessLogItem logItem = overloadReduction.reduceCpuLoad(body.get("threshold"));
             // response
             Map<String, ProcessLogItem> payload = new HashMap<>();
             payload.put("processRemoved", logItem);
