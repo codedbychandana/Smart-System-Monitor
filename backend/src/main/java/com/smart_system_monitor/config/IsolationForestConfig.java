@@ -44,16 +44,14 @@ public class IsolationForestConfig {
 
         final int SAMPLE_COUNT = 15;
 
-        // fetch initial sample loads
         double[][] data = new double[SAMPLE_COUNT][];
-        
-        // convert to 2d double array
-        data = sysMetrics.getProcesses(SAMPLE_COUNT)
-        .stream()
-        .map(p -> new double[]{p.getProcessCpuLoadCumulative() * 100})
-        .toArray(double[][]::new);
 
-        // create model and serialize
+        // fetch initial sample loads
+        for (int i = 0; i<SAMPLE_COUNT; i++){
+            data[i] = new double[]{sysMetrics.getMetrics().get(0)};
+        }
+
+        // create & train model
         model = IsolationForest.fit(data);
  
         return model;
