@@ -1,6 +1,7 @@
 package com.smart_system_monitor.services;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ import com.smart_system_monitor.helpers.IsolationForestManager;
 import com.smart_system_monitor.models.ProcessLogItem;
 
 import oshi.software.os.OSProcess;
+import oshi.SystemInfo;
 
 @Service
 public class OverloadReductionService {
@@ -102,7 +104,10 @@ public class OverloadReductionService {
 
         // count how many records of cpu loads are too high
         long highLoadCount = cpuLoadHistory.stream()
-        .filter(load -> load > threshold)
+        .filter(load -> {
+            System.out.println(load);
+            return load > threshold;
+        })
         .count();
         
         return highLoadCount >= countThreshold;
@@ -119,7 +124,7 @@ public class OverloadReductionService {
 
         // use isolation forest model to see if anomaly detected based on user
         // provided threshold for cpu load
-        return isolationForestManager.isAnomaly(cpuLoad, cpuLoadHistory);
+        return isolationForestManager.isAnomaly(cpuLoad, new ArrayList<>(cpuLoadHistory), threshold);
     }
 
     /** 
@@ -134,8 +139,14 @@ public class OverloadReductionService {
         }
         int pid = processes.get(0).getProcessID();
         
+        String family = new SystemInfo().getOperatingSystem().getFamily();
+        
         // kill top process
-        Runtime.getRuntime().exec("taskkill /PID " + pid + " /F");
+        if (family.equals("Windows")){
+            Runtime.getRuntime().exec("taskkill /PID " + pid + " /F");
+        } else {
+            Runtime.getRuntime().exec("kill " + pid);
+        }
         System.out.println("Process " + pid + " has been terminated.");
         return pid;
     }

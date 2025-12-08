@@ -10,17 +10,18 @@ import oshi.hardware.CentralProcessor;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.HardwareAbstractionLayer;
 import oshi.software.os.OperatingSystem;
-import oshi.software.os.OperatingSystem.ProcessSorting;
 import oshi.software.os.OSProcess;
 
 @Service
 public class SystemMetricsService {
     private final SystemInfo sysInfo;
     private final HardwareAbstractionLayer HAL;
+    private final MonitoringStatsService stats;
 
-    public SystemMetricsService(){
+    public SystemMetricsService(MonitoringStatsService stats){
         sysInfo = new SystemInfo();
         HAL = sysInfo.getHardware();
+        this.stats = stats;
     }
 
     /** 
@@ -28,7 +29,7 @@ public class SystemMetricsService {
     */
     public List<Double> getMetrics(){
         // the result
-        List<Double> metrics  = new ArrayList<>();
+        List<Double> metrics = new ArrayList<>();
 
         CentralProcessor processor = HAL.getProcessor();
         GlobalMemory memory = HAL.getMemory();
@@ -39,6 +40,10 @@ public class SystemMetricsService {
         
         metrics.add(cpuLoad);
         metrics.add(ramUsed);
+
+        // record metric
+        stats.recordMetric(cpuLoad);
+
         return metrics;
     }
 
@@ -48,9 +53,9 @@ public class SystemMetricsService {
     public List<OSProcess> getProcesses(int n){
         OperatingSystem OS = sysInfo.getOperatingSystem();
         List<OSProcess> res = OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, n);
-        for (OSProcess p : res){
-            System.out.println(p.getProcessID() + " " + p.getProcessCpuLoadCumulative());
-        }
+        // for (OSProcess p : res){
+        //     System.out.println(p.getProcessID() + " " + p.getProcessCpuLoadCumulative());
+        // }
             
         return res;
     }

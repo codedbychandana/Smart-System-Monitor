@@ -41,18 +41,20 @@ public class MonitoringStatsService {
         metricsCounter.increment();
     }
 
-    public void recordAnomaly(boolean trueAnomaly) {
+    public void recordAnomaly() {
         anomalyCounter.increment();
-        if (trueAnomaly)
-            trueAnomalyCounter.increment();
     }
 
-    public void recordOverloadPrevention() {
+    public void recordTrueAnomaly(){
+        trueAnomalyCounter.increment();
+    }
+
+    public void recordOverloadPrevented() {
         overloadPreventedCounter.increment();
     }
 
     public double getAnomalyAccuracy() {
         if (anomalyCounter.count() == 0) return 0;
-        return (trueAnomalyCounter.count() / anomalyCounter.count()) * 100;
+        return (trueAnomalyCounter.count() / anomalyCounter.count());
     }
 }

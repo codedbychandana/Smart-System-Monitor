@@ -23,7 +23,7 @@ public class IsolationForestManager{
 
     private final MonitoringStatsService stats;
 
-    private IsolationForestManager(IsolationForest model, IsolationForestConfig modelConfig, MonitoringStatsService stats){
+    public IsolationForestManager(IsolationForest model, IsolationForestConfig modelConfig, MonitoringStatsService stats){
         this.model = model;
         this.modelConfig = modelConfig;
         this.stats = stats;
@@ -53,7 +53,7 @@ public class IsolationForestManager{
         double percentile = 95;
 
         // check if isolation forest model detects anomaly
-        boolean anomalyDetected = model.score(sample) * 100 > getScoreThreshold(data, percentile);
+        boolean anomalyDetected = model.score(sample) > getScoreThreshold(data, percentile);
         
         // check if true anomaly based on user threshold
         boolean trueAnomaly = sample[0] > threshold;

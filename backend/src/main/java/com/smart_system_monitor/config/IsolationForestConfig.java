@@ -20,35 +20,20 @@ import smile.anomaly.IsolationForest;
 @Configuration
 public class IsolationForestConfig {
     // saved model path
-    private final String path = "src/main/resources/model/IsolationForest.bin";
+    private final String path = "src/main/java/com/smart_system_monitor/models/IsolationForest.bin";
+
+    private final SystemMetricsService sysMetrics;
+
+    public IsolationForestConfig(SystemMetricsService sysMetricsService){
+        this.sysMetrics = sysMetricsService;
+    }
 
     /**
-     * loads existing model or creates new isolation forest model saving it
+     * creates new isolation forest model saving it
     */
     @Bean
-    public IsolationForest isolationForestModel(SystemMetricsService sysMetricsService) throws ClassNotFoundException, IOException {
-        IsolationForest model = null;
-
-        try{
-            model = load();
-        } catch (FileNotFoundException e){
-            final int SAMPLE_COUNT = 5;
-
-            // fetch initial sample loads
-            double[][] data = new double[SAMPLE_COUNT][];
-            
-            // convert to 2d double array
-            data = sysMetricsService.getProcesses(SAMPLE_COUNT)
-            .stream()
-            .map(p -> new double[]{p.getProcessCpuLoadCumulative() * 100})
-            .toArray(double[][]::new);
-
-            // create model and serialize
-            model = IsolationForest.fit(data);
-            save(model);
-        }
-
-        return model;
+    public IsolationForest isolationForestModel() throws ClassNotFoundException, IOException {
+        return load();
     }
 
     /**
@@ -56,18 +41,31 @@ public class IsolationForestConfig {
     */
     private IsolationForest load() throws ClassNotFoundException, FileNotFoundException, IOException{
         IsolationForest model = null;
-        // for test
-        File file = new File(path);
-        file.delete();
 
+        final int SAMPLE_COUNT = 15;
 
-        // load model if exists
-        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
-        model = (IsolationForest) ois.readObject();
+        // fetch initial sample loads
+        double[][] data = new double[SAMPLE_COUNT][];
+        
+        // convert to 2d double array
+        data = sysMetrics.getProcesses(SAMPLE_COUNT)
+        .stream()
+        .map(p -> new double[]{p.getProcessCpuLoadCumulative() * 100})
+        .toArray(double[][]::new);
 
-        ois.close();
+        // create model and serialize
+        model = IsolationForest.fit(data);
+        //save(model);
 
         return model;
+
+        // // load model if exists
+        // ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
+        // model = (IsolationForest) ois.readObject();
+
+        // ois.close();
+
+        // return model;
     }
 
     /** 
