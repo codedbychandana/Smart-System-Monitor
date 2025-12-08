@@ -38,17 +38,12 @@ public class OverloadReductionService {
 
     @Autowired
     public OverloadReductionService(SystemMetricsService sysMetrics, IsolationForestManager isolationForestManager, MonitoringStatsService stats){
-        this.HISTORY_MAX_SIZE = 15;
+        this.HISTORY_MAX_SIZE = 25;
 
         this.sysMetrics = sysMetrics;
         this.stats = stats;
         this.isolationForestManager = isolationForestManager;
-        cpuLoadHistory = new LinkedList<>(
-            sysMetrics.getProcesses(HISTORY_MAX_SIZE)
-            .stream()
-            .map(p -> p.getProcessCpuLoadCumulative())
-            .toList()
-        );
+        cpuLoadHistory = new LinkedList<>();
     }
 
     /**
@@ -105,7 +100,6 @@ public class OverloadReductionService {
         // count how many records of cpu loads are too high
         long highLoadCount = cpuLoadHistory.stream()
         .filter(load -> {
-            System.out.println(load);
             return load > threshold;
         })
         .count();
@@ -156,5 +150,19 @@ public class OverloadReductionService {
     */
     private void setThreshold(double threshold){
         this.threshold = Math.abs(threshold);
+    }
+
+    /**
+     * retrain model every 5 minutes
+    */
+    @Scheduled(fixedRate= 5 * 60 * 1000)
+    protected void retrainModel(){
+        if (!cpuLoadHistory.isEmpty()){
+            double[][] data = cpuLoadHistory.stream()
+            .map(load -> new double[]{load})
+            .toArray(double[][]::new);
+    
+            isolationForestManager.train(data);
+        }
     }
 }
