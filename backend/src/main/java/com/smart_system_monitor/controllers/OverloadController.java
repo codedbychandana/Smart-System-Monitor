@@ -29,7 +29,7 @@ public class OverloadController {
     /**
      * api endpoint to check if cpu is overloaded
     */
-    @GetMapping("/monitor")
+    @PostMapping("/monitor")
     public ResponseEntity<Map<String, Boolean>> monitor(@RequestBody Map<String, Double> body){
         boolean isOverloaded = overloadReduction.monitorCpuLoad(body.get("threshold"));
         

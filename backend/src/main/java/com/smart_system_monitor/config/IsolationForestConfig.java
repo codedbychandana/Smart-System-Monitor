@@ -29,7 +29,7 @@ public class IsolationForestConfig {
     }
 
     /**
-     * creates new isolation forest model saving it
+     * returns new isolation forest model 
     */
     @Bean
     public IsolationForest isolationForestModel() throws ClassNotFoundException, IOException {
@@ -37,7 +37,7 @@ public class IsolationForestConfig {
     }
 
     /**
-     * deserializer for trained model
+     * returns a pre-trained isolation forest model using current cpu loads
     */
     private IsolationForest load() throws ClassNotFoundException, FileNotFoundException, IOException{
         IsolationForest model = null;
@@ -55,17 +55,8 @@ public class IsolationForestConfig {
 
         // create model and serialize
         model = IsolationForest.fit(data);
-        //save(model);
-
+ 
         return model;
-
-        // // load model if exists
-        // ObjectInputStream ois = new ObjectInputStream(new FileInputStream(path));
-        // model = (IsolationForest) ois.readObject();
-
-        // ois.close();
-
-        // return model;
     }
 
     /** 

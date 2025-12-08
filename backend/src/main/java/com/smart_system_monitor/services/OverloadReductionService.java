@@ -82,7 +82,7 @@ public class OverloadReductionService {
         // add to cpu history
         addCpuLoad(curCpuLoad);
 
-        return isOverloaded() || predictOverloading();
+        return predictOverloading() || isOverloaded();
     }
 
     /**
