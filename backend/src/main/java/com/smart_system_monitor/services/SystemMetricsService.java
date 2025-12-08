@@ -1,8 +1,11 @@
 package com.smart_system_monitor.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import oshi.SystemInfo;
@@ -42,7 +45,7 @@ public class SystemMetricsService {
         metrics.add(ramUsed);
 
         // record metric
-        stats.recordMetric(cpuLoad);
+        stats.recordMetric();
 
         return metrics;
     }
@@ -53,10 +56,8 @@ public class SystemMetricsService {
     public List<OSProcess> getProcesses(int n){
         OperatingSystem OS = sysInfo.getOperatingSystem();
         List<OSProcess> res = OS.getProcesses(null, OperatingSystem.ProcessSorting.CPU_DESC, n);
-        // for (OSProcess p : res){
-        //     System.out.println(p.getProcessID() + " " + p.getProcessCpuLoadCumulative());
-        // }
             
         return res;
     }
+
 }

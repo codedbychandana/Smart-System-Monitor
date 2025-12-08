@@ -37,7 +37,7 @@ public class MonitoringStatsService {
         
     }
 
-    public void recordMetric(double cpu) {
+    public void recordMetric() {
         metricsCounter.increment();
     }
 
